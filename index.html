@@ -3,77 +3,520 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>game-insights</title>
+  <title>game-insights — readings a designer can check</title>
+  <meta name="description" content="Four readings from a GameAnalytics export: exploration, risk-taking, experimentation, and play style. A proof of concept of the method, grounded in player-modeling research.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,560;0,9..144,640;1,9..144,520&family=Outfit:wght@380;480;580&display=swap" rel="stylesheet">
   <style>
     :root {
-      color-scheme: light;
-      --ink: #1c1917;
-      --muted: #57534e;
-      --line: #e7e5e4;
-      --paper: #fafaf9;
-      --accent: #9a3412;
+      --ink: #1c1914;
+      --muted: #5c5348;
+      --paper: #f4efe6;
+      --sheet: #fbf7f0;
+      --line: #e3d8c8;
+      --cover: #17211e;
+      --cover-ink: #f6f0e6;
+      --cover-muted: #c9bfb0;
+      --copper: #a34b2e;
+      --sage: #1f6b58;
+      --sage-wash: #e5f2ed;
+      --shadow: 0 18px 40px rgba(28, 25, 20, 0.06);
     }
 
     * { box-sizing: border-box; }
-
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      min-height: 100vh;
-      font-family: Georgia, "Times New Roman", serif;
-      color: var(--ink);
       background: var(--paper);
+      color: var(--ink);
+      font-family: Outfit, "Segoe UI", sans-serif;
+      font-weight: 380;
+      font-size: 1.0625rem;
+      line-height: 1.6;
     }
+    a { color: var(--copper); text-underline-offset: 0.18em; }
+    a:hover { color: var(--ink); }
+    :focus-visible { outline: 2px solid var(--copper); outline-offset: 3px; }
 
-    main {
-      max-width: 38rem;
+    .skip {
+      position: absolute;
+      left: 1rem;
+      top: -3rem;
+      background: var(--sheet);
+      padding: 0.4rem 0.7rem;
+    }
+    .skip:focus { top: 0.6rem; }
+
+    .cover {
+      background:
+        radial-gradient(1200px 500px at 90% -10%, rgba(163, 75, 46, 0.28), transparent 55%),
+        var(--cover);
+      color: var(--cover-ink);
+      padding: 1.25rem 1.5rem 4.5rem;
+    }
+    .nav {
+      max-width: 1080px;
       margin: 0 auto;
-      padding: 18vh 1.5rem 4rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.25rem;
+      align-items: baseline;
+      justify-content: space-between;
     }
-
-    p {
+    .brand {
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 640;
+      letter-spacing: -0.03em;
+      color: var(--cover-ink);
+      text-decoration: none;
+      font-size: 1.15rem;
+    }
+    .nav ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem 1rem;
+      list-style: none;
       margin: 0;
-      line-height: 1.5;
+      padding: 0;
     }
+    .nav a { color: var(--cover-muted); text-decoration: none; font-size: 0.95rem; }
+    .nav a:hover { color: var(--cover-ink); }
 
-    .mark {
-      font-family: "Segoe UI", sans-serif;
-      font-size: 0.8rem;
-      letter-spacing: 0.08em;
+    .hero {
+      max-width: 1080px;
+      margin: 4.5rem auto 0;
+    }
+    .kicker {
+      margin: 0 0 0.8rem;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--accent);
+      font-size: 0.78rem;
+      color: #e7b199;
     }
-
     h1 {
-      margin: 0.6rem 0 1rem;
-      font-size: 2.75rem;
-      font-weight: normal;
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 560;
+      font-size: clamp(3.2rem, 8vw, 6.4rem);
+      line-height: 0.92;
+      letter-spacing: -0.045em;
+      margin: 0;
+    }
+    .lede {
+      max-width: 38rem;
+      margin: 1.5rem 0 0;
+      font-size: 1.28rem;
+      line-height: 1.45;
+      color: var(--cover-ink);
+    }
+    .hero-note {
+      max-width: 38rem;
+      margin: 1rem 0 0;
+      color: var(--cover-muted);
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.75rem;
+      max-width: 1080px;
+      margin: 3rem auto 0;
+    }
+    .stat {
+      border-top: 1px solid rgba(246, 240, 230, 0.25);
+      padding-top: 0.8rem;
+    }
+    .stat b {
+      display: block;
+      font-family: Fraunces, Georgia, serif;
+      font-size: 1.8rem;
+      font-weight: 560;
       letter-spacing: -0.03em;
     }
+    .stat span { color: var(--cover-muted); font-size: 0.92rem; }
 
-    .summary {
-      font-size: 1.25rem;
-      color: var(--muted);
-    }
-
-    a {
-      display: inline-block;
-      margin-top: 2rem;
-      font-family: "Segoe UI", sans-serif;
+    main { max-width: 1080px; margin: 0 auto; padding: 0 1.5rem 5rem; }
+    section { padding-top: 4.5rem; }
+    .section-label {
+      font-family: Fraunces, Georgia, serif;
+      color: var(--copper);
       font-size: 0.95rem;
-      color: var(--ink);
-      border-bottom: 1px solid var(--line);
-      text-decoration: none;
+      margin: 0 0 0.4rem;
+    }
+    h2 {
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 560;
+      font-size: clamp(2rem, 4vw, 3rem);
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin: 0 0 1rem;
+    }
+    h3 {
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 560;
+      font-size: 1.45rem;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.45rem;
+    }
+    .intro { max-width: 42rem; color: var(--muted); }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1.25rem;
+      margin-top: 1.75rem;
+    }
+    .sheet, .skill, .step, .use, .source {
+      background: var(--sheet);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+    .sheet { padding: 1.4rem 1.5rem 1.2rem; }
+    .sheet p:last-child, .skill p:last-child, .use p:last-child { margin-bottom: 0; }
+    .limits { margin: 0.6rem 0 0; padding-left: 1.1rem; }
+    .limits li { margin: 0.35rem 0; }
+
+    .sources { display: grid; gap: 0.9rem; margin-top: 1.5rem; }
+    .source {
+      display: grid;
+      grid-template-columns: 7.5rem 1fr 1fr;
+      gap: 1rem;
+      padding: 1.15rem 1.25rem;
+    }
+    .source .tag {
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--copper);
+      padding-top: 0.2rem;
+    }
+    .source h3 { font-size: 1.15rem; }
+    .source p { margin: 0; color: var(--muted); }
+    .source .does { color: var(--ink); }
+
+    .skills {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.9rem;
+      margin-top: 1.5rem;
+    }
+    .skill { padding: 1.3rem 1.35rem 1.2rem; }
+    .skill .n {
+      font-family: Fraunces, Georgia, serif;
+      color: var(--copper);
+      margin: 0 0 0.35rem;
+    }
+    .measure { color: var(--muted); margin-top: 0; }
+    .example {
+      margin-top: 0.9rem;
+      padding: 0.85rem 0.95rem;
+      background: var(--sage-wash);
+      border-radius: 12px;
+      color: #14382f;
+    }
+    .example b { font-weight: 580; }
+    .links { margin: 0.85rem 0 0; font-size: 0.95rem; }
+    .aside {
+      grid-column: 1 / -1;
+      padding: 1.2rem 1.35rem;
+      border-radius: 18px;
+      background: var(--cover);
+      color: var(--cover-ink);
+    }
+    .aside p { margin: 0.4rem 0 0; color: var(--cover-muted); }
+    .aside a { color: #f0c2ae; }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.8rem;
+      margin-top: 1.5rem;
+    }
+    .step { padding: 1.1rem 1rem 1rem; }
+    .step .n {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 1.6rem;
+      color: var(--copper);
+      margin: 0;
+    }
+    .step h3 { font-size: 1.15rem; }
+    .step p { margin: 0; color: var(--muted); }
+
+    .uses { display: grid; gap: 0.9rem; margin-top: 1.5rem; }
+    .use { padding: 1.3rem 1.4rem; }
+    .use .for { margin: 0; color: var(--copper); font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    .callout {
+      margin-top: 1.25rem;
+      padding: 1.3rem 1.4rem;
+      border-left: 4px solid var(--sage);
+      background: var(--sheet);
+      border-radius: 0 16px 16px 0;
+    }
+    .callout p { margin: 0.4rem 0 0; }
+
+    .refs { margin: 1.4rem 0 0; padding: 0; list-style: none; color: var(--muted); }
+    .refs li { margin: 0.55rem 0; padding-top: 0.55rem; border-top: 1px solid var(--line); font-size: 0.95rem; }
+    .refs li:first-child { border-top: 0; padding-top: 0; }
+
+    footer {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 1.5rem 3rem;
+      color: var(--muted);
+      font-size: 0.95rem;
     }
 
-    a:hover { border-bottom-color: var(--ink); }
+    @media (max-width: 900px) {
+      .stats, .steps, .skills, .split, .source { grid-template-columns: 1fr; }
+      .cover { padding-bottom: 3rem; }
+      .hero { margin-top: 3rem; }
+    }
   </style>
 </head>
 <body>
-  <main>
-    <p class="mark">Vida</p>
-    <h1>game-insights</h1>
-    <p class="summary">Skills to help AI agents provide insights based on game analytics.</p>
-    <a href="https://github.com/vidatg/game-insights">View the repository</a>
+  <a class="skip" href="#purpose" data-testid="skip">Skip to content</a>
+  <header class="cover" data-testid="header">
+    <nav class="nav" aria-label="Page" data-testid="nav">
+      <a class="brand" href="#top" data-testid="nav-brand">game-insights</a>
+      <ul>
+        <li><a href="#purpose" data-testid="nav-purpose">Purpose</a></li>
+        <li><a href="#research" data-testid="nav-research">Research</a></li>
+        <li><a href="#skills" data-testid="nav-skills">Skills</a></li>
+        <li><a href="#studio" data-testid="nav-studio">Studio</a></li>
+        <li><a href="#designers" data-testid="nav-designers">Designers</a></li>
+      </ul>
+    </nav>
+    <div class="hero" id="top" data-testid="hero">
+      <p class="kicker" data-testid="hero-kicker">Gameplay telemetry, read as evidence</p>
+      <h1 data-testid="hero-title">A reading a designer can check.</h1>
+      <p class="lede" data-testid="hero-lede">A studio brings a GameAnalytics export. An agent reports what the sessions did. A designer opens the part of the game the report names.</p>
+      <p class="hero-note" data-testid="hero-note">This is a proof of concept of that method. The scenes below are synthetic. A real export is read the same way. The reading describes what these sessions did.</p>
+    </div>
+    <div class="stats" aria-label="At a glance" data-testid="stats">
+      <div class="stat" data-testid="stat-readings"><b>4</b><span>readings for a studio</span></div>
+      <div class="stat" data-testid="stat-sources"><b>12</b><span>sources the method answers</span></div>
+      <div class="stat" data-testid="stat-skills"><b>6</b><span>skills in the repository</span></div>
+      <div class="stat" data-testid="stat-mapping"><b>1</b><span>mapping, confirmed once</span></div>
+    </div>
+  </header>
+
+  <main data-testid="main">
+    <section id="purpose" data-testid="section-purpose">
+      <p class="section-label" data-testid="purpose-label">01</p>
+      <h2 data-testid="purpose-title">What this project is for</h2>
+      <p class="intro" data-testid="purpose-intro">GameAnalytics logs what happened. It does not say what a design event means. A cave visit, a side door, and a weapon change are names the studio confirms. After that confirmation, the agent can count those events and hand a designer a place to look.</p>
+      <div class="split">
+        <article class="sheet" data-testid="purpose-input">
+          <h3 data-testid="purpose-input-title">The input</h3>
+          <p data-testid="purpose-input-body">One JSON object per event. Each event carries the player, the session, the time, and a category the schema already explains, or a design id that still needs a meaning.</p>
+          <p data-testid="purpose-input-mapping">The studio writes that meaning once, in a mapping file beside the export. A sentence in chat is not the file. The agent asks only about design ids the file does not already cover.</p>
+        </article>
+        <article class="sheet" data-testid="purpose-output">
+          <h3 data-testid="purpose-output-title">The output</h3>
+          <p data-testid="purpose-output-body">A report in five steps: what was observed, what was counted, what that count supports, what a designer might check, and what could not be checked.</p>
+          <ul class="limits" data-testid="purpose-limits">
+            <li data-testid="purpose-limit-confidence">The count stays separate from confidence.</li>
+            <li data-testid="purpose-limit-thin">A thin trace, or a missing goal, reward, or safer alternative, leaves the count out.</li>
+            <li data-testid="purpose-limit-affect">Fun, frustration, arousal, and motivation type stay out of the report.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="research" data-testid="section-research">
+      <p class="section-label" data-testid="research-label">02</p>
+      <h2 data-testid="research-title">The research, and what we do about it</h2>
+      <p class="intro" data-testid="research-intro">Twelve sources. Each one leaves a problem open. The method answers that problem with a limit on the reading. The full argument is in <a href="https://github.com/vidatg/game-insights/blob/main/docs/_games/approach.md" data-testid="research-approach-link">the approach</a>. The export and the mapping gate are in <a href="https://github.com/vidatg/game-insights/blob/main/docs/_games/log-contract.md" data-testid="research-contract-link">the log contract</a>.</p>
+      <div class="sources" data-testid="research-sources">
+        <article class="source" data-testid="source-experience">
+          <p class="tag" data-testid="source-experience-tag">Experience</p>
+          <div>
+            <h3 data-testid="source-experience-title">A metric is not an experience</h3>
+            <p data-testid="source-experience-problem">Yannakakis, Spronck, Loiacono, and André show that gameplay metrics observe experience only indirectly. Pedersen, Togelius, and Yannakakis could predict challenge and frustration more readily than fun, and the same signal, such as a death, raised those states differently.</p>
+          </div>
+          <p class="does" data-testid="source-experience-response">The report keeps observation, measurement, inference, and interpretation apart. It names the game conditions the count depends on. It does not predict fun, frustration, or arousal.</p>
+        </article>
+        <article class="source" data-testid="source-transfer">
+          <p class="tag" data-testid="source-transfer-tag">Transfer</p>
+          <div>
+            <h3 data-testid="source-transfer-title">A model from one game does not travel by itself</h3>
+            <p data-testid="source-transfer-problem">Shaker, Shaker, and Abou-Zleikha found that features which did not mean the same thing in two games did not survive the translation. Melhart, Liapis, and Yannakakis predicted arousal change inside one genre. Time dominated. They do not claim the result across genres.</p>
+          </div>
+          <p class="does" data-testid="source-transfer-response">A reading moves to another game only after the studio confirms that the event ids share a meaning.</p>
+        </article>
+        <article class="source" data-testid="source-sequence">
+          <p class="tag" data-testid="source-sequence-tag">Sequence</p>
+          <div>
+            <h3 data-testid="source-sequence-title">Totals hide order</h3>
+            <p data-testid="source-sequence-problem">Chen, Seif El-Nasr, Canossa, Badler, Tignor, and Colvin argue that aggregate counts discard the sequence of choices. Their sequences tracked expertise more than personality. This citation is the abstract. Bakkes, Spronck, and van Lankveld show that a button-level model fails when the same style is played with different controls.</p>
+          </div>
+          <p class="does" data-testid="source-sequence-response">Exploration, risk-taking, and experimentation read sequences and choices. Play style sets those readings beside progression and resource. None of them emit a personality score.</p>
+        </article>
+        <article class="source" data-testid="source-exploration">
+          <p class="tag" data-testid="source-exploration-tag">Exploration</p>
+          <div>
+            <h3 data-testid="source-exploration-title">Exploration depends on the goal in the session</h3>
+            <p data-testid="source-exploration-problem">Gómez-Maureira, Kniestedt, van Duijn, Rieffe, and Plaat found that an explicit goal and being paid reduced spatial exploration, and that a curiosity trait did not predict who explored. Acevedo, Choi, Liu, Kao, and Mousas found that a coin-collection task lowered the share of the map players visited.</p>
+          </div>
+          <p class="does" data-testid="source-exploration-response">The exploration reading counts optional-area events while a mapped goal or reward is in the session. A missing goal or reward is missing context. It is not a low score.</p>
+        </article>
+        <article class="source" data-testid="source-risk">
+          <p class="tag" data-testid="source-risk-tag">Risk</p>
+          <div>
+            <h3 data-testid="source-risk-title">A general risk questionnaire is a weak fit</h3>
+            <p data-testid="source-risk-problem">Lyu, Zhao, Zhang, Chen, Zhou, and Zhu paired Dota 2 matches with a general risk-propensity questionnaire. The best model explained about 17% of the questionnaire.</p>
+          </div>
+          <p class="does" data-testid="source-risk-response">Risk-taking records a harder option taken while a safer one was available in the log. The later win or failure stays beside that choice. A failure on its own is not the score.</p>
+        </article>
+        <article class="source" data-testid="source-mechanics">
+          <p class="tag" data-testid="source-mechanics-tag">Mechanics</p>
+          <div>
+            <h3 data-testid="source-mechanics-title">What to measure is decided with the game</h3>
+            <p data-testid="source-mechanics-problem">Seif El-Nasr describes every action as what, where, when, and who, and treats useful features as the ones tied to the core mechanics, chosen with the people who designed the game. A designer can check over-used and under-used areas, features not used as intended, and where progression sticks.</p>
+          </div>
+          <p class="does" data-testid="source-mechanics-response">That choice is the mapping. The agent asks only about design events the schema does not already explain.</p>
+        </article>
+        <article class="source" data-testid="source-language">
+          <p class="tag" data-testid="source-language-tag">Language</p>
+          <div>
+            <h3 data-testid="source-language-title">The designer gets sentences tied to events</h3>
+            <p data-testid="source-language-problem">Rubio-Manzano and Triviño turn gameplay numbers into sentences through rules the designer defined, so a session is more than a scoreboard.</p>
+          </div>
+          <p class="does" data-testid="source-language-response">Every sentence in the report traces to a measurement. The report does not invent a label the events do not support.</p>
+        </article>
+        <article class="source" data-testid="source-motivation">
+          <p class="tag" data-testid="source-motivation-tag">Motivation</p>
+          <div>
+            <h3 data-testid="source-motivation-title">Why is not in the stream</h3>
+            <p data-testid="source-motivation-problem">Voitovich states the gap between telemetry, which records what players do, and motivation models, which talk about why. The paper offers a research agenda. This citation is the abstract.</p>
+          </div>
+          <p class="does" data-testid="source-motivation-response">The report does not assign a motivation type.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="skills" data-testid="section-skills">
+      <p class="section-label" data-testid="skills-label">03</p>
+      <h2 data-testid="skills-title">Six skills</h2>
+      <p class="intro" data-testid="skills-intro">Four skills produce the readings a studio asks for. Two skills are for people changing this repository. A studio does not install packages to use the four.</p>
+      <div class="skills" data-testid="skill-list">
+        <article class="skill" data-testid="skill-exploration">
+          <p class="n" data-testid="skill-exploration-label">01 · Exploration</p>
+          <h3 data-testid="skill-exploration-title">Did players visit optional places while a goal was available?</h3>
+          <p class="measure" data-testid="skill-exploration-measure">It counts optional-area events, and how many sessions contain them, under the goal or reward the mapping names.</p>
+          <p class="example" data-testid="skill-exploration-example"><b>Example.</b> Three sessions finish the level. Two also visit a cave or a grove. Score: 3 optional-area events in 2 of 3 sessions. The session that only finishes the level stays in the count.</p>
+          <p class="links" data-testid="skill-exploration-links"><a href="https://github.com/vidatg/game-insights/blob/main/.agents/skills/x-exploration-reviewer/SKILL.md" data-testid="skill-exploration-skill-link">Skill</a> · <a href="https://github.com/vidatg/game-insights/blob/main/.agents/skills/x-exploration-reviewer/assets/examples/report.md" data-testid="skill-exploration-report-link">Report</a> · <a href="https://github.com/vidatg/game-insights/blob/main/.agents/skills/x-exploration-reviewer/references/methodology.md" data-testid="skill-exploration-methodology-link">Methodology</a></p>
+        </article>
+        <article class="skill" data-testid="skill-risk">
+          <p class="n" data-testid="skill-risk-label">02 · Risk-taking</p>
+          <h3 data-testid="skill-risk-title">Did players pick the harder option while a safer one was also there?</h3>
+          <p class="measure" data-testid="skill-risk-measure">Among sessions that show the safer alternative, it counts how many also took the harder option. The later win or failure stays beside that count.</p>
+          <p class="example" data-testid="skill-risk-example"><b>Example.</b> One session takes the side door and fails. One takes the side door and the boss, then finishes. Score: 1 of the 2 sessions that showed the safer alternative also took the harder option.</p>
+          <p class="links" data-testid="skill-risk-links"><a href="https://github.com/vidatg/game-insights/blob/main/.agents/skills/x-risk-taking-reviewer/SKILL.md" data-testid="skill-risk-skill-link">Skill</a> · <a href="https://github.com/vidatg/game-insights/blob/main/.agents/skills/x-risk-taking-reviewer/assets/examples/report.md" data-testid="skill-risk-report-link">Report</a> · <a href="https://github.com/vidatg/game-insights/blob/main/.agents/skills/x-risk-taking-reviewer/references/methodology.md" data-testid="skill-risk-methodology-link">Methodology</a></p>
+        </article>
+        <article class="skill" data-testid="skill-experimentation">
+          <p class="n" data-testid="skill-experimentation-label">03 · Experimentation</p>
+          <h3 data-testid="skill-experimentation-title">Did players try a different option on a later attempt?</h3>
+          <p class="measure" data-testid="skill-experimentation-measure">It counts sessions where the mapped option changed, and it keeps the order. A later win does not prove the change worked. No paper in this set studies experimentation by that name. The reading follows the sequence argument above.</p>
+          <p class="example" data-testid="skill-experimentation-example"><b>Example.</b> Sword, then fail, then bow. Sword only, then complete. Bow, then fail, then staff. Score: the equipped option changed in 2 of 3 sessions.</p>
+          <p class="links" data-testid="skill-experimentation-links"><a href="https://github.com/vidatg/game-insights/blob/main/.agents/skills/x-experimentation-reviewer/SKILL.md" data-testid="skill-experimentation-skill-link">Skill</a> · <a href="https://github.com/vidatg/game-insights/blob/main/.agents/skills/x-experimentation-reviewer/assets/examples/report.md" data-testid="skill-experimentation-report-link">Report</a> · <a href="https://github.com/vidatg/game-insights/blob/main/.agents/skills/x-experimentation-reviewer/references/methodology.md" data-testid="skill-experimentation-methodology-link">Methodology</a></p>
+        </article>
+        <article class="skill" data-testid="skill-play-style">
+          <p class="n" data-testid="skill-play-style-label">04 · Play style</p>
+          <h3 data-testid="skill-play-style-title">Which session should the designer open?</h3>
+          <p class="measure" data-testid="skill-play-style-measure">It repeats the three scores, then counts finishes, failures, and what was spent. It names the session that failed and what that session spent. It does not produce a style score, and it does not re-read design events.</p>
+          <p class="example" data-testid="skill-play-style-example"><b>Example.</b> Two sessions finish level 1. Session 2 fails level 1 and spends 10 gold. That is the session to open.</p>
+          <p class="links" data-testid="skill-play-style-links"><a href="https://github.com/vidatg/game-insights/blob/main/.agents/skills/x-play-style-reviewer/SKILL.md" data-testid="skill-play-style-skill-link">Skill</a> · <a href="https://github.com/vidatg/game-insights/blob/main/.agents/skills/x-play-style-reviewer/assets/examples/report.md" data-testid="skill-play-style-report-link">Report</a> · <a href="https://github.com/vidatg/game-insights/blob/main/.agents/skills/x-play-style-reviewer/references/methodology.md" data-testid="skill-play-style-methodology-link">Methodology</a></p>
+        </article>
+        <aside class="aside" data-testid="contributors">
+          <h3 data-testid="contributors-title">For contributors</h3>
+          <p data-testid="contributor-skill-helper"><a href="https://github.com/vidatg/game-insights/blob/main/.agents/skills/x-skill-build-helper/SKILL.md" data-testid="contributor-skill-helper-link">Skill build helper</a> holds the conventions for adding or editing a skill in this repository: name, version, layout, and the pointer each agent tool needs.</p>
+          <p data-testid="contributor-codeowners"><a href="https://github.com/vidatg/game-insights/blob/main/.agents/skills/x-codeowners-editor/SKILL.md" data-testid="contributor-codeowners-link">CODEOWNERS editor</a> holds the rules for who owns a new path, and the script that writes that line.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="studio" data-testid="section-studio">
+      <p class="section-label" data-testid="studio-label">04</p>
+      <h2 data-testid="studio-title">How a studio uses it</h2>
+      <p class="intro" data-testid="studio-intro">No package install. The skills are the files under <code>.agents/skills/</code>. Open this folder as the agent's workspace.</p>
+      <div class="steps" data-testid="studio-steps">
+        <article class="step" data-testid="studio-step-export">
+          <p class="n" data-testid="studio-step-export-number">1</p>
+          <h3 data-testid="studio-step-export-title">Bring the export</h3>
+          <p data-testid="studio-step-export-body">A GameAnalytics file: one JSON object per event. The log contract is the shape.</p>
+        </article>
+        <article class="step" data-testid="studio-step-mapping">
+          <p class="n" data-testid="studio-step-mapping-number">2</p>
+          <h3 data-testid="studio-step-mapping-title">Confirm the mapping</h3>
+          <p data-testid="studio-step-mapping-body">Say which design ids are exploration, risk-taking, or experimentation, or that they should be ignored. Save that file beside the export.</p>
+        </article>
+        <article class="step" data-testid="studio-step-readings">
+          <p class="n" data-testid="studio-step-readings-number">3</p>
+          <h3 data-testid="studio-step-readings-title">Ask for three readings</h3>
+          <p data-testid="studio-step-readings-body">Exploration, risk-taking, and experimentation, in any order. Each one reads the same export and the same mapping.</p>
+        </article>
+        <article class="step" data-testid="studio-step-play-style">
+          <p class="n" data-testid="studio-step-play-style-number">4</p>
+          <h3 data-testid="studio-step-play-style-title">Ask for play style last</h3>
+          <p data-testid="studio-step-play-style-body">Give it the three readings and the same export. If one reading is missing, it stops and does not invent it.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="designers" data-testid="section-designers">
+      <p class="section-label" data-testid="designers-label">05</p>
+      <h2 data-testid="designers-title">What a designer does with a report</h2>
+      <p class="intro" data-testid="designers-intro">A higher count means the behavior showed up in more sessions. You compare that count to the behavior you built the game for. The same 2 of 3 can be the outcome you hoped for, or a sign the level is losing people. The skill reports the count. You decide the change.</p>
+      <div class="uses" data-testid="designer-uses">
+        <article class="use" data-testid="use-exploration">
+          <p class="for" data-testid="use-exploration-label">Exploration · 2 of 3 sessions visited an optional place</p>
+          <h3 data-testid="use-exploration-title">You look at those places against the goal you set.</h3>
+          <p data-testid="use-exploration-body">You built the cave and the grove so players would find them. Then 2 of 3 means most sessions reached them. You built them as rare detours. Then the same 2 of 3 means the main path is losing people. You walk the level with that count in mind and decide whether the optional places, or the goal, need a change.</p>
+        </article>
+        <article class="use" data-testid="use-risk">
+          <p class="for" data-testid="use-risk-label">Risk-taking · 1 of 2 sessions took the harder door</p>
+          <h3 data-testid="use-risk-title">You play both doors.</h3>
+          <p data-testid="use-risk-body">The score is only the sessions where the safe door was also available. You built the hard door as an optional challenge. Then 1 of 2 is players using it. You hoped players would keep the safe door. Then 1 of 2 is players walking into the hard one. The failure stays a fact about the level. It is not, by itself, the risk.</p>
+        </article>
+        <article class="use" data-testid="use-experimentation">
+          <p class="for" data-testid="use-experimentation-label">Experimentation · the weapon changed in 2 of 3 sessions</p>
+          <h3 data-testid="use-experimentation-title">You read the order, then you try that order.</h3>
+          <p data-testid="use-experimentation-body">You built several weapons so players would try them. Then 2 of 3 is that plan showing up. You built one weapon as the intended one. Then 2 of 3 is players leaving it. A later finish does not prove the new weapon caused the win. You play the sequence the report lists and see what the change did in the fight.</p>
+        </article>
+        <article class="use" data-testid="use-play-style">
+          <p class="for" data-testid="use-play-style-label">Play style · session 2 failed and spent 10 gold</p>
+          <h3 data-testid="use-play-style-title">You open that session.</h3>
+          <p data-testid="use-play-style-body">The other three readings already said how often each behavior showed up. This one adds which session finished, which session failed, and what that session spent. You open session 2. You look up session 2 in the other readings. The behavior they recorded for it is the path you play: the safe door, the hard door, a weapon change, or an optional place. That path is the place to change, because that is where a session lost and spent gold. If those readings never name session 2, you still open the failed level, and you do not guess which behavior went with the loss.</p>
+        </article>
+      </div>
+      <div class="callout" data-testid="designers-stop">
+        <h3 data-testid="designers-stop-title">Where the report stops</h3>
+        <p data-testid="designers-stop-body">The agent names the count and the session. You play that part of the game and choose the change. The report does not rank a larger count as a better game, and it does not name a kind of player.</p>
+      </div>
+    </section>
+
+    <section id="sources" data-testid="section-sources">
+      <p class="section-label" data-testid="sources-label">Sources</p>
+      <h2 data-testid="sources-title">The twelve references</h2>
+      <ol class="refs" data-testid="sources-list">
+        <li data-testid="ref-yannakakis">G. N. Yannakakis, P. Spronck, D. Loiacono, and E. André, “Player Modeling,” in <em>Artificial and Computational Intelligence in Games</em>, Dagstuhl Follow-Ups, 2013.</li>
+        <li data-testid="ref-pedersen">C. Pedersen, J. Togelius, and G. N. Yannakakis, “Modeling Player Experience for Content Creation,” <em>IEEE Transactions on Computational Intelligence and AI in Games</em>, vol. 2, no. 1, pp. 54–67, 2010. <a href="https://doi.org/10.1109/TCIAIG.2010.2043950" data-testid="ref-pedersen-link">doi.org/10.1109/TCIAIG.2010.2043950</a></li>
+        <li data-testid="ref-shaker">N. Shaker, M. Shaker, and M. Abou-Zleikha, “Towards Generic Models of Player Experience,” in <em>Proceedings of the AAAI Conference on Artificial Intelligence and Interactive Digital Entertainment</em>, vol. 11, no. 1, 2015. <a href="https://doi.org/10.1609/aiide.v11i1.12806" data-testid="ref-shaker-link">doi.org/10.1609/aiide.v11i1.12806</a></li>
+        <li data-testid="ref-melhart">D. Melhart, A. Liapis, and G. N. Yannakakis, “Towards General Models of Player Experience: A Study Within Genres,” in <em>IEEE Conference on Games</em>, 2021. <a href="https://arxiv.org/abs/2110.00978" data-testid="ref-melhart-link">arxiv.org/abs/2110.00978</a></li>
+        <li data-testid="ref-chen">Z. Chen, M. Seif El-Nasr, A. Canossa, J. Badler, S. Tignor, and R. Colvin, “Modeling Individual Differences through Frequent Pattern Mining on Role-Playing Game Actions,” in <em>Proceedings of the AAAI Conference on Artificial Intelligence and Interactive Digital Entertainment</em>, vol. 11, no. 5, pp. 2–7, 2015. Abstract. <a href="https://doi.org/10.1609/aiide.v11i5.12847" data-testid="ref-chen-link">doi.org/10.1609/aiide.v11i5.12847</a></li>
+        <li data-testid="ref-bakkes">S. C. J. Bakkes, P. H. M. Spronck, and G. van Lankveld, “Player behavioural modelling for video games,” <em>Entertainment Computing</em>, vol. 3, no. 3, pp. 71–79, 2012. <a href="https://doi.org/10.1016/j.entcom.2011.12.001" data-testid="ref-bakkes-link">doi.org/10.1016/j.entcom.2011.12.001</a></li>
+        <li data-testid="ref-gomez">M. A. Gómez-Maureira, I. Kniestedt, M. van Duijn, C. Rieffe, and A. Plaat, “Level Design Patterns That Invoke Curiosity-Driven Exploration,” <em>Proceedings of the ACM on Human-Computer Interaction</em>, vol. 5, CHI PLAY, article 271, 2021. <a href="https://doi.org/10.1145/3474698" data-testid="ref-gomez-link">doi.org/10.1145/3474698</a></li>
+        <li data-testid="ref-acevedo">P. Acevedo, M. Choi, H. Liu, D. Kao, and C. Mousas, “Game Level Design to Evoke Spatial Exploration: The Influence of a Secondary Task,” in <em>Companion Proceedings of the Annual Symposium on Computer-Human Interaction in Play</em>, 2024. <a href="https://doi.org/10.1145/3665463.3678811" data-testid="ref-acevedo-link">doi.org/10.1145/3665463.3678811</a></li>
+        <li data-testid="ref-lyu">S. Lyu, N. Zhao, Y. Zhang, W. Chen, H. Zhou, and T. Zhu, “Predicting Risk Propensity Through Player Behavior in DOTA 2,” <em>Frontiers in Psychology</em>, vol. 13, 2022. <a href="https://doi.org/10.3389/fpsyg.2022.827008" data-testid="ref-lyu-link">doi.org/10.3389/fpsyg.2022.827008</a></li>
+        <li data-testid="ref-seif">M. Seif El-Nasr, “Intro to User Analytics,” <em>Game Developer</em>, 2013. <a href="https://www.gamedeveloper.com/business/intro-to-user-analytics" data-testid="ref-seif-link">gamedeveloper.com</a></li>
+        <li data-testid="ref-rubio">C. Rubio-Manzano and G. Triviño, “Automatic Linguistic Feedback in Computer Games,” in <em>Proceedings of the 2015 Conference of the International Fuzzy Systems Association and the European Society for Fuzzy Logic and Technology</em>, 2015. <a href="https://doi.org/10.2991/ifsa-eusflat-15.2015.69" data-testid="ref-rubio-link">doi.org/10.2991/ifsa-eusflat-15.2015.69</a></li>
+        <li data-testid="ref-voitovich">I. Voitovich, “Integrating Telemetry with Player Motivation Models,” in <em>Conference Proceedings of DiGRA Central Asia</em>, 2026. Abstract. <a href="https://dl.digra.org/index.php/dl/article/view/2777" data-testid="ref-voitovich-link">dl.digra.org</a></li>
+      </ol>
+    </section>
   </main>
+  <footer data-testid="footer">
+    <p data-testid="footer-note">Synthetic examples. A real GameAnalytics export is read the same way, after the mapping beside it is confirmed.</p>
+  </footer>
 </body>
 </html>
