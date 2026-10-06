@@ -1,2 +1,2 @@
 # game-insights
-Skills to help AI Agents provide Insights based on Game Analytics
+Skills that help an AI agent turn gameplay telemetry into a reading a designer can check.

@@ -85,7 +85,7 @@
         display: flex;
         flex-wrap: wrap;
         gap: 0.75rem 1.25rem;
-        align-items: baseline;
+        align-items: center;
         justify-content: space-between;
       }
       .brand {
@@ -100,9 +100,24 @@
         display: flex;
         flex-wrap: wrap;
         gap: 0.35rem 1rem;
+        align-items: baseline;
         list-style: none;
         margin: 0;
         padding: 0;
+      }
+      .nav-sep {
+        color: var(--cover-muted);
+      }
+      .nav-github {
+        color: var(--cover-muted);
+      }
+      .nav-github svg {
+        width: 1.05rem;
+        height: 1.05rem;
+        display: inline-block;
+        vertical-align: -0.2em;
+        margin-right: 0.4rem;
+        fill: currentColor;
       }
       .nav a {
         color: var(--cover-muted);
@@ -207,6 +222,19 @@
         gap: 1.25rem;
         margin-top: 1.75rem;
       }
+      .purpose-uses {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+        margin-top: 1.75rem;
+      }
+      .purpose-uses .for {
+        margin: 0 0 0.45rem;
+        color: var(--copper);
+        font-size: 0.82rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
       .sheet,
       .skill,
       .step,
@@ -261,6 +289,14 @@
       .source .does {
         color: var(--ink);
       }
+      .source .role {
+        margin: 0 0 0.45rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--copper);
+        font-weight: 580;
+      }
 
       .skills {
         display: grid;
@@ -311,7 +347,7 @@
 
       .steps {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: 1fr 1fr;
         gap: 0.8rem;
         margin-top: 1.5rem;
       }
@@ -553,7 +589,8 @@
         .hero {
           margin-top: 3rem;
         }
-        .case-head {
+        .case-head,
+        .purpose-uses {
           grid-template-columns: 1fr;
         }
       }
@@ -573,30 +610,50 @@
             <a href="#designers" data-testid="nav-designers">Designers</a>
           </li>
           <li><a href="#case" data-testid="nav-case">Case</a></li>
+          <li class="nav-sep" aria-hidden="true" data-testid="nav-github-sep">|</li>
+          <li>
+            <a
+              class="nav-github"
+              href="https://github.com/vidatg/game-insights"
+              data-testid="nav-github"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path
+                  d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+                />
+              </svg>
+              <span data-testid="nav-github-label">GitHub project</span>
+            </a>
+          </li>
         </ul>
       </nav>
       <div class="hero" id="top" data-testid="hero">
         <p class="kicker" data-testid="hero-kicker">
           Gameplay telemetry, read as evidence
         </p>
-        <h1 data-testid="hero-title">A reading a designer can check.</h1>
+        <h1 data-testid="hero-title">A reading a game designer can check.</h1>
         <p class="lede" data-testid="hero-lede">
-          A studio brings a GameAnalytics export. An agent reports what the
-          sessions did. A designer opens the part of the game the report names.
+          A game studio brings a GameAnalytics export. An agent reports what the
+          play sessions did, and which session to look at. The game designer
+          then opens that part in the game and plays it, to decide what to
+          change.
         </p>
         <p class="hero-note" data-testid="hero-note">
-          This is a proof of concept of that method. Each claim is limited to
-          what the cited studies support. The Super Mario section is a simulated
-          case, not telemetry from a released game. A real export is read the
-          same way. The reading describes what these sessions did.
+          This page demonstrates that process.
+          Each claim is limited to what the cited studies support. The Super
+          Mario section is a simulated case, not telemetry
+          from a released game. A real export is read the same way. The reading
+          describes what these sessions did.
         </p>
       </div>
       <div class="stats" aria-label="At a glance" data-testid="stats">
         <div class="stat" data-testid="stat-readings">
-          <b>4</b><span>readings for a studio</span>
+          <b>4</b><span>readings for a game studio</span>
         </div>
         <div class="stat" data-testid="stat-sources">
-          <b>12</b><span>sources the method answers</span>
+          <b>12</b><span>papers this project answers</span>
         </div>
         <div class="stat" data-testid="stat-skills">
           <b>6</b><span>skills in the repository</span>
@@ -612,45 +669,48 @@
         <p class="section-label" data-testid="purpose-label">01</p>
         <h2 data-testid="purpose-title">What this project is for</h2>
         <p class="intro" data-testid="purpose-intro">
-          GameAnalytics logs what happened. It does not say what a design event
-          means. A cave visit, a side door, and a weapon change are names the
-          studio confirms. After that confirmation, the agent can count those
-          events and hand a designer a place to look.
+          A studio can use these readings in more than one place. Two of those
+          uses are below. Both start from the same export and the same mapping.
+          Both run exploration, risk-taking, and experimentation first, then
+          play style last.
         </p>
-        <div class="split">
-          <article class="sheet" data-testid="purpose-input">
-            <h3 data-testid="purpose-input-title">The input</h3>
-            <p data-testid="purpose-input-body">
-              One JSON object per event. Each event carries the player, the
-              session, the time, and a category the schema already explains, or
-              a design id that still needs a meaning.
+        <div class="purpose-uses" data-testid="purpose-uses">
+          <article class="sheet" data-testid="purpose-use-designer">
+            <p class="for" data-testid="purpose-use-designer-label">
+              Use 1 · After the sessions
             </p>
-            <p data-testid="purpose-input-mapping">
-              The studio writes that meaning once, in a mapping file beside the
-              export. A sentence in chat is not the file. The agent asks only
-              about design ids the file does not already cover.
+            <h3 data-testid="purpose-use-designer-title">
+              The designer decides what to change.
+            </h3>
+            <p data-testid="purpose-use-designer-body">
+              The designer brings a GameAnalytics export and confirms what each
+              design id means. She runs the three readings on that pair, then
+              gives those three reports to the play-style skill. Play style
+              adds no score of its own. It places the three readings beside the
+              finishes, the failures, and what was spent, and it names the
+              session to open. That session is the place she looks when she
+              decides how to improve the game.
             </p>
           </article>
-          <article class="sheet" data-testid="purpose-output">
-            <h3 data-testid="purpose-output-title">The output</h3>
-            <p data-testid="purpose-output-body">
-              A report in five steps: what was observed, what was counted, what
-              that count supports, what a designer might check, and what could
-              not be checked.
+          <article class="sheet" data-testid="purpose-use-ingame">
+            <p class="for" data-testid="purpose-use-ingame-label">
+              Use 2 · During play
             </p>
-            <ul class="limits" data-testid="purpose-limits">
-              <li data-testid="purpose-limit-confidence">
-                The count stays separate from confidence.
-              </li>
-              <li data-testid="purpose-limit-thin">
-                A thin trace, or a missing goal, reward, or safer alternative,
-                leaves the count out.
-              </li>
-              <li data-testid="purpose-limit-affect">
-                Fun, frustration, arousal, and motivation type stay out of the
-                report.
-              </li>
-            </ul>
+            <h3 data-testid="purpose-use-ingame-title">
+              A game that already calls a model.
+            </h3>
+            <p data-testid="purpose-use-ingame-body">
+              Some games already send a prompt to a language model while the
+              player is playing. The game asks what she wants to do, or she
+              chooses: enter the cave, or jump into the pipe. That choice is
+              the prompt. The game already holds the log, and it can run these
+              four skills on it. The agent runs the three readings, then play
+              style. Suppose the cave is the harder option and the pipe is the
+              safer one, and the risk-taking report shows that these sessions
+              rarely took the harder option when a safer one was available. The
+              agent can suggest the pipe. The suggestion follows that count.
+              The report does not name a kind of player.
+            </p>
           </article>
         </div>
       </section>
@@ -661,23 +721,26 @@
           The research, and what we do about it
         </h2>
         <p class="intro" data-testid="research-intro">
-          Twelve sources. Each one leaves a problem open. The method answers
-          that problem with a limit on the reading. The full argument is in
+          Twelve papers. Each paper leaves a problem open. This project answers
+          that problem by limiting what a reading is allowed to claim. The full
+          argument is in
           <a
             href="https://github.com/vidatg/game-insights/blob/main/docs/_games/approach.md"
             data-testid="research-approach-link"
-            >the approach</a
-          >. The export and the mapping gate are in
+            >our approach document</a
+          >. The shape of the export, and the rule that a mapping must be
+          confirmed, are in
           <a
             href="https://github.com/vidatg/game-insights/blob/main/docs/_games/log-contract.md"
             data-testid="research-contract-link"
-            >the log contract</a
+            >our log contract</a
           >.
         </p>
         <div class="sources" data-testid="research-sources">
           <article class="source" data-testid="source-experience">
             <p class="tag" data-testid="source-experience-tag">Experience</p>
             <div>
+              <p class="role" data-testid="source-experience-problem-label">The problem</p>
               <h3 data-testid="source-experience-title">
                 A metric is not an experience
               </h3>
@@ -689,34 +752,42 @@
                 those states differently.
               </p>
             </div>
-            <p class="does" data-testid="source-experience-response">
+            <div>
+              <p class="role" data-testid="source-experience-response-label">Our answer</p>
+              <p class="does" data-testid="source-experience-response">
               The report keeps observation, measurement, inference, and
               interpretation apart. It names the game conditions the count
               depends on. It does not predict fun, frustration, or arousal.
             </p>
+            </div>
           </article>
           <article class="source" data-testid="source-transfer">
             <p class="tag" data-testid="source-transfer-tag">Transfer</p>
             <div>
+              <p class="role" data-testid="source-transfer-problem-label">The problem</p>
               <h3 data-testid="source-transfer-title">
                 A model from one game does not travel by itself
               </h3>
               <p data-testid="source-transfer-problem">
-                Shaker, Shaker, and Abou-Zleikha found that features which did
+                N. Shaker, M. Shaker, and Abou-Zleikha found that features which did
                 not mean the same thing in two games did not survive the
                 translation. Melhart, Liapis, and Yannakakis predicted arousal
                 change inside one genre. Time dominated. They do not claim the
                 result across genres.
               </p>
             </div>
-            <p class="does" data-testid="source-transfer-response">
+            <div>
+              <p class="role" data-testid="source-transfer-response-label">Our answer</p>
+              <p class="does" data-testid="source-transfer-response">
               A reading moves to another game only after the studio confirms
               that the event ids share a meaning.
             </p>
+            </div>
           </article>
           <article class="source" data-testid="source-sequence">
             <p class="tag" data-testid="source-sequence-tag">Sequence</p>
             <div>
+              <p class="role" data-testid="source-sequence-problem-label">The problem</p>
               <h3 data-testid="source-sequence-title">Totals hide order</h3>
               <p data-testid="source-sequence-problem">
                 Chen, Seif El-Nasr, Canossa, Badler, Tignor, and Colvin argue
@@ -727,15 +798,19 @@
                 different controls.
               </p>
             </div>
-            <p class="does" data-testid="source-sequence-response">
+            <div>
+              <p class="role" data-testid="source-sequence-response-label">Our answer</p>
+              <p class="does" data-testid="source-sequence-response">
               Exploration, risk-taking, and experimentation read sequences and
               choices. Play style sets those readings beside progression and
-              resource. None of them emit a personality score.
+              resource.               None of them emit a personality score.
             </p>
+            </div>
           </article>
           <article class="source" data-testid="source-exploration">
             <p class="tag" data-testid="source-exploration-tag">Exploration</p>
             <div>
+              <p class="role" data-testid="source-exploration-problem-label">The problem</p>
               <h3 data-testid="source-exploration-title">
                 Exploration depends on the goal in the session
               </h3>
@@ -748,15 +823,19 @@
                 visited.
               </p>
             </div>
-            <p class="does" data-testid="source-exploration-response">
+            <div>
+              <p class="role" data-testid="source-exploration-response-label">Our answer</p>
+              <p class="does" data-testid="source-exploration-response">
               The exploration reading counts optional-area events while a mapped
               goal or reward is in the session. A missing goal or reward is
-              missing context. It is not a low score.
+              missing context.               It is not a low score.
             </p>
+            </div>
           </article>
           <article class="source" data-testid="source-risk">
             <p class="tag" data-testid="source-risk-tag">Risk</p>
             <div>
+              <p class="role" data-testid="source-risk-problem-label">The problem</p>
               <h3 data-testid="source-risk-title">
                 A general risk questionnaire is a weak fit
               </h3>
@@ -766,15 +845,19 @@
                 explained about 17% of the questionnaire.
               </p>
             </div>
-            <p class="does" data-testid="source-risk-response">
+            <div>
+              <p class="role" data-testid="source-risk-response-label">Our answer</p>
+              <p class="does" data-testid="source-risk-response">
               Risk-taking records a harder option taken while a safer one was
               available in the log. The later win or failure stays beside that
-              choice. A failure on its own is not the score.
+              choice.               A failure on its own is not the score.
             </p>
+            </div>
           </article>
           <article class="source" data-testid="source-mechanics">
             <p class="tag" data-testid="source-mechanics-tag">Mechanics</p>
             <div>
+              <p class="role" data-testid="source-mechanics-problem-label">The problem</p>
               <h3 data-testid="source-mechanics-title">
                 What to measure is decided with the game
               </h3>
@@ -786,14 +869,18 @@
                 used as intended, and where progression sticks.
               </p>
             </div>
-            <p class="does" data-testid="source-mechanics-response">
+            <div>
+              <p class="role" data-testid="source-mechanics-response-label">Our answer</p>
+              <p class="does" data-testid="source-mechanics-response">
               That choice is the mapping. The agent asks only about design
               events the schema does not already explain.
             </p>
+            </div>
           </article>
           <article class="source" data-testid="source-language">
             <p class="tag" data-testid="source-language-tag">Language</p>
             <div>
+              <p class="role" data-testid="source-language-problem-label">The problem</p>
               <h3 data-testid="source-language-title">
                 The designer gets sentences tied to events
               </h3>
@@ -803,14 +890,18 @@
                 scoreboard.
               </p>
             </div>
-            <p class="does" data-testid="source-language-response">
+            <div>
+              <p class="role" data-testid="source-language-response-label">Our answer</p>
+              <p class="does" data-testid="source-language-response">
               Every sentence in the report traces to a measurement. The report
               does not invent a label the events do not support.
             </p>
+            </div>
           </article>
           <article class="source" data-testid="source-motivation">
             <p class="tag" data-testid="source-motivation-tag">Motivation</p>
             <div>
+              <p class="role" data-testid="source-motivation-problem-label">The problem</p>
               <h3 data-testid="source-motivation-title">
                 Why is not in the stream
               </h3>
@@ -820,9 +911,12 @@
                 paper offers a research agenda. This citation is the abstract.
               </p>
             </div>
-            <p class="does" data-testid="source-motivation-response">
+            <div>
+              <p class="role" data-testid="source-motivation-response-label">Our answer</p>
+              <p class="does" data-testid="source-motivation-response">
               The report does not assign a motivation type.
             </p>
+            </div>
           </article>
         </div>
       </section>
@@ -835,6 +929,20 @@
           people changing this repository. A studio does not install packages to
           use the four.
         </p>
+        <aside class="callout" data-testid="skills-tip">
+          <h3 data-testid="skills-tip-title">Tip</h3>
+          <p data-testid="skills-tip-body">
+            An agent is a program that reads instructions and then carries out a
+            task. You do not need to have used one before.
+            <a href="https://agents.md/" data-testid="skills-tip-agents-link">AGENTS.md</a>
+            is a standard file where a project writes those instructions for the
+            agent.
+            <a href="https://agentskills.io/home" data-testid="skills-tip-skills-link">Agent Skills</a>
+            is a standard for a skill: a folder of instructions the agent follows
+            for one job. This project uses both standards. The six skills below
+            are those folders in this repository.
+          </p>
+        </aside>
         <div class="skills" data-testid="skill-list">
           <article class="skill" data-testid="skill-exploration">
             <p class="n" data-testid="skill-exploration-label">
@@ -1022,17 +1130,20 @@
             <p class="n" data-testid="studio-step-export-number">1</p>
             <h3 data-testid="studio-step-export-title">Bring the export</h3>
             <p data-testid="studio-step-export-body">
-              A GameAnalytics file: one JSON object per event. The log contract
-              is the shape.
+              Bring one file that holds the game's events. Each event inside
+              that file is its own JSON object. Our log contract is the document
+              in this project that describes that shape.
             </p>
           </article>
           <article class="step" data-testid="studio-step-mapping">
             <p class="n" data-testid="studio-step-mapping-number">2</p>
             <h3 data-testid="studio-step-mapping-title">Confirm the mapping</h3>
             <p data-testid="studio-step-mapping-body">
-              Say which design ids are exploration, risk-taking, or
-              experimentation, or that they should be ignored. Save that file
-              beside the export.
+              A mapping is a file that says what each design event means for
+              these readings: an optional place, a harder option, a change of
+              power, or an event to leave out. The agent helps you confirm it.
+              It recommends a meaning and asks short questions until you agree.
+              Save that file beside the export.
             </p>
           </article>
           <article class="step" data-testid="studio-step-readings">
@@ -1051,6 +1162,10 @@
               Ask for play style last
             </h3>
             <p data-testid="studio-step-play-style-body">
+              Play style is not another score. It is a summary. It places the
+              three readings beside the finishes, the failures, and what players
+              spent in the game, such as coins or lives. It then names the
+              session to open. Ask for that report last.
               Give it the three readings and the same export. If one reading is
               missing, it stops and does not invent it.
             </p>
